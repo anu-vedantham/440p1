@@ -29,5 +29,9 @@ public class TransactionalFileInputStream extends InputStream implements Seriali
 	public void close() throws IOException {
 		reader.close();
 	}
+	
+	public void afterMigrating(){
+		this.reader = null;
+	}
 
 }

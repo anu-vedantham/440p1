@@ -29,5 +29,9 @@ public class TransactionalFileOutputStream extends OutputStream implements Seria
 	public void close() throws IOException {
 		writer.close();
 	}
+	
+	public void afterMigrating(){
+		this.writer = null;
+	}
 
 }
