@@ -4,18 +4,25 @@ import java.io.InputStreamReader;
 /**
  * Terminal Runner is used to begin Process Manager and to parse the inputs of the user
  */
+import java.util.Arrays;
 
 /**
  * @author Anu Vedantham
  *
  */
 public class TerminalRunner {
-
+	
+private static ProcessManager manager;
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		/**
+		 *  @TODO give processManager information to finishing implementing ps 
+		 *  and adding a new process
+		 */
+		manager = new ProcessManager();
+		
 		boolean stillRunning = true;
 		InputStreamReader ir = new InputStreamReader(System.in);
 		BufferedReader br = new BufferedReader(ir);
@@ -61,12 +68,15 @@ public class TerminalRunner {
 						System.out.println("not a valid argument");
 					else{
 						String[] tokens = input.split(" ");
-						System.out.println("Class name: "+ tokens[0]);
-						if (tokens.length >1){
-							for(int i = 1; i<tokens.length; i++){
-								System.out.println("arg "+ i +": "+ tokens[i]);
-							}
+						String className = tokens[0];
+						String[] argArray = Arrays.copyOfRange(tokens, 1, tokens.length);
+						try{
+							manager.addProcess(className, argArray);
 						}
+						catch(Exception e){
+							System.out.println("Process "+ className + " not available");	
+						}
+							
 					}
 					
 					break;				
