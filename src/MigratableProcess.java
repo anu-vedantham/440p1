@@ -29,7 +29,13 @@ public abstract class MigratableProcess implements Runnable, Serializable{
 		suspending = false;
 	};
 	
-	public abstract void afterMigrate();
+	public void afterMigrate(){
+		if (this.inFile != null)
+			this.inFile.afterMigrating();
+		if (this.outFile != null)
+			this.outFile.afterMigrating();
+		this.run();
+	};
 	
 	public double getID(){
 		return id;
