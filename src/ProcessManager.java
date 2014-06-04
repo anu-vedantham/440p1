@@ -3,6 +3,7 @@
 //import java.io.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicLong;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -24,9 +25,13 @@ public class ProcessManager {
 	}
 	
 	private MigratableProcess processByPid(long pid){
-		foreach(MigratableProcess process in processes){
-			//HOW TO ITERATE THROUGH QUEUE
+		Iterator<MigratableProcess> processIter = processes.iterator();
+		while(processIter.hasNext()){
+			MigratableProcess process = processIter.next();
+			if (process.getID() == pid)
+				return process;
 		}
+		return null;
 	}
 	
 	public void addProcess(String className, String[] args) throws Exception {
@@ -40,7 +45,7 @@ public class ProcessManager {
 		processes.add(newProcess);
 	}
 	
-	public void migrateProcess(String[] args){
+	public void migrateProcess(String[] args) throws Exception {
 		long pid = Long.parseLong(args[1]);
 		String host = args[2];
 		MigratableProcess process = processByPid(pid);
