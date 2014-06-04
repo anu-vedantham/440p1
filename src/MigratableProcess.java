@@ -1,53 +1,55 @@
 import java.io.Serializable;
 
 
-public abstract class MigratableProcess implements Runnable, Serializable{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public interface MigratableProcess extends Runnable, Serializable{
 	
+	//private static final long serialVersionUID = 1L;
 	
+	/*
 	private long id;
 	private volatile boolean suspending;
 	private TransactionalFileInputStream  inFile;
 	private TransactionalFileOutputStream outFile;
+	*/
 	
-	public MigratableProcess(){
+	/*public MigratableProcess(){
 		//this.id = generate ID
-		this.suspending = false;
-	}
+		//this.suspending = false;
+	}*/
+	void run();
 	
-	public abstract void run();
-	
-	public void suspend(){
+	public void suspend();
+		/*
 		suspending = true;
 		while (suspending);
-	};
+		*/
 	
-	public void unsuspend(){
-		suspending = false;
-	};
+	
+	public void unsuspend();
+		//suspending = false;
+	
 
-	public void afterMigrate(){
-		if (this.inFile != null)
+	public void afterMigrate();
+	/*	
+	  	if (this.inFile != null)
 			this.inFile.afterMigrating();
 		if (this.outFile != null)
 			this.outFile.afterMigrating();
 		this.run();
-	};
+	*/
 	
-	public long getID(){
-		return id;
-	};
 	
-	public void setID(long newID){
-		id = newID;
-	}
+	public void setID(long newID);
+	
+	public abstract long getID();
 	
 	public abstract String toString();
 	
 	public abstract void setInputStream(TransactionalFileInputStream inFile);
 	
+	public abstract TransactionalFileInputStream getInputStream(); 
+	
 	public abstract void setOutputStream(TransactionalFileOutputStream outFile);
+	
+	public abstract TransactionalFileOutputStream getOutputStream();
 }
