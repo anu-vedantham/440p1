@@ -58,6 +58,17 @@ public class ProcessManager {
 		return null;
 	}
 	
+	public String listProcesses(){
+		if (processes.isEmpty())
+			return "No Processes currently running\n";
+		String returnedString = "";
+		for(MigratableProcess process: processes){
+			returnedString+= process.getID()+": "+process.toString()+"\n";
+		}
+		return returnedString;
+					
+	}
+	
 	public void migrateProcess(String[] args) throws Exception {
 		long pid = Long.parseLong(args[0]);
 		

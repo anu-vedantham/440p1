@@ -60,7 +60,7 @@ private static boolean stillRunning = true;
 					 * print the classname of the process, arguments, 
 					 * as well as the process' id (pid) 
 					 */
-					System.out.println("No Processes currently running");
+					System.out.print(manager.listProcesses());
 					break;
 				default:
 					/*
@@ -107,6 +107,7 @@ private static boolean stillRunning = true;
 
 		}
 	}
+	
 	
 	public static void startServer(){
 		server = new ProcessServer();
