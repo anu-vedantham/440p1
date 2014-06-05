@@ -1,6 +1,10 @@
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 /**
  * Terminal Runner is used to begin Process Manager and to parse the inputs of the user
  */
@@ -13,6 +17,8 @@ import java.util.Arrays;
 public class TerminalRunner {
 	
 private static ProcessManager manager;
+private static ProcessServer server;
+private static boolean stillRunning = true;
 	/**
 	 * @param args
 	 */
@@ -23,9 +29,9 @@ private static ProcessManager manager;
 		 */
 		manager = new ProcessManager();
 		
-		boolean stillRunning = true;
 		InputStreamReader ir = new InputStreamReader(System.in);
 		BufferedReader br = new BufferedReader(ir);
+		server = new ProcessServer();
 		while(stillRunning){
 			String input = "";
 			try{
@@ -62,19 +68,36 @@ private static ProcessManager manager;
 					 * 'ClassName arg[0] arg[1] ... arg[n-1]'
 					 *  where n is the number of arguments the 
 					 *  class' constructor is taking 
+					 *  OR
+					 *  mg pid
+					 *  where pid is a natural number
 					 */
 					
 					if (input.length() < 1)
 						System.out.println("not a valid argument");
 					else{
 						String[] tokens = input.split(" ");
+						if (tokens[0].equalsIgnoreCase("migrate")  && isInteger(tokens[1])){
+							String[] migrateArgs = new String[3];
+							migrateArgs[0] = tokens[1];
+							migrateArgs[1] = "localhost"; //@TODO eeeh might wanna change it
+							migrateArgs[2] =   String.valueOf(server.PORT);
+							
+							try {
+								manager.migrateProcess(migrateArgs);
+							} catch (Exception e) {
+								System.out.println("Error: "+e);
+							}
+							
+						}
 						String className = tokens[0];
 						String[] argArray = Arrays.copyOfRange(tokens, 1, tokens.length);
 						try{
 							manager.addProcess(className, argArray);
 						}
 						catch(Exception e){
-							System.out.println("Process "+ className + " not available");	
+							System.out.println("Process "+ className 
+									+ " not available with args given");	
 						}
 							
 					}
@@ -84,5 +107,120 @@ private static ProcessManager manager;
 
 		}
 	}
+	
+	public static boolean isInteger(String s) {
+	    try { 
+	        Integer.parseInt(s); 
+	    } catch(NumberFormatException e) { 
+	        return false; 
+	    }
+	    // only got here if we didn't return false
+	    return true;
+	}
+	
+	private class Listener implements Runnable {
+		Socket listener;
+		public Listener(Socket someSocket){
+			this.listener = someSocket;
+		}
+			
+		public void run() {
+			try {
+				ObjectInputStream in = new ObjectInputStream(listener.getInputStream());
+				DataOutputStream out = new DataOutputStream(listener.getOutputStream());
 
+				Object object = in.readObject();
+
+	            if(object instanceof MigratableProcess){
+	            	MigratableProcess process = (MigratableProcess) object;
+	            	process.afterMigrate();
+	            	//confirm that process was received
+	            	out.writeBoolean(true);
+		            manager.startProcess(process);
+	            }
+	            else 
+	            	out.writeBoolean(false);
+	            
+	            in.close();
+	            out.close();
+	            listener.close();
+			}
+			catch (Exception e) {
+				System.out.println("Error in data sent: "+ e);
+	        } 
+		}
+			
+
+	}
+
+	public class ProcessServer implements Runnable{
+	    /**
+	     * Default port number of process server
+	     */
+	    public static final int PORT = 15440;
+
+	    /**
+	     * Server socket of process server
+	     */
+	    private ServerSocket serverSocket;
+
+	    /**
+	     * Running flag
+	     */
+	    //private boolean running;
+
+	    /**
+	     * Bind  the port, then loop to
+	     * accept() migration request.
+	     */
+	    
+	    public void run() {
+	        // = true;
+	        bind();
+	        while(stillRunning){
+	            accept();
+	        }
+	    }
+
+	    /**
+	     * Stop the process server.
+	     */
+	    public void stop(){
+	        if(stillRunning){
+	            //stillRunning = false;
+	            try {
+	                serverSocket.close();
+	            } catch (Exception e) {
+	                System.out.println("Error"+ e);
+	                System.exit(-1);
+	            }
+	        }
+	    }
+
+	    /**
+	     * Bind the port
+	     * If bind failed, the program exit with -1.
+	     */
+	    private void bind(){
+	        try {	        	
+	            serverSocket = new ServerSocket(PORT);
+	        } catch (Exception e) {
+	            System.out.println
+	            	("ServerSocket failed to bind. Restart program and try again");
+	            System.exit(-1);
+	        }
+	    }
+	    
+	    private void accept(){
+	        Socket clientSocket = null;
+	        try {
+	            clientSocket = serverSocket.accept();
+	        }
+	        catch (Exception e) {
+	        	System.out.println("Error: "+ e);
+	            System.exit(-1);
+	        }
+	        new Thread(new Listener(clientSocket)).start();
+	    }
+	}
 }

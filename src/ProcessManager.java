@@ -40,18 +40,36 @@ public class ProcessManager {
 		MigratableProcess newProcess = (MigratableProcess) contr.newInstance(args);
 		newProcess.setID(currentpid.get());
 		nextPid();
+		startProcess(newProcess);
+		processes.add(newProcess);
+	}
+
+	public void startProcess(MigratableProcess newProcess){
 		Thread process = new Thread(newProcess);
 		process.start();
-		processes.add(newProcess);
+	}
+
+	public MigratableProcess getProcess(long pid){
+		for (MigratableProcess process: processes){
+			if(process.getID() == pid)
+				return process;
+		}
+		
+		return null;
 	}
 	
 	public void migrateProcess(String[] args) throws Exception {
-		long pid = Long.parseLong(args[1]);
-		String host = args[2];
+		long pid = Long.parseLong(args[0]);
+		
+		String host = args[1];
+		/**
+		 * @TODO gotta change wherever migrateProcess is called
+		 */
+		int port = Integer.parseInt(args[2]);
 		MigratableProcess process = processByPid(pid);
 		
 		Socket socket = null;
-		socket = new Socket(host, PORT);
+		socket = new Socket(host, port);
 		process.suspend();
 		
 		ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
