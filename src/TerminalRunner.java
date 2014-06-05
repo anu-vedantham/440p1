@@ -28,10 +28,10 @@ private static boolean stillRunning = true;
 		 *  and adding a new process
 		 */
 		manager = new ProcessManager();
-		
+		TerminalRunner runner = new TerminalRunner();
 		InputStreamReader ir = new InputStreamReader(System.in);
 		BufferedReader br = new BufferedReader(ir);
-		server = new ProcessServer();
+		startServer();
 		while(stillRunning){
 			String input = "";
 			try{
@@ -108,6 +108,12 @@ private static boolean stillRunning = true;
 		}
 	}
 	
+	public static void startServer(){
+		server = new ProcessServer();
+        Thread serverThread = new Thread(new ProcessServer());
+        serverThread.start();
+	}
+	
 	public static boolean isInteger(String s) {
 	    try { 
 	        Integer.parseInt(s); 
@@ -118,7 +124,8 @@ private static boolean stillRunning = true;
 	    return true;
 	}
 	
-	private class Listener implements Runnable {
+	
+	private static class Listener implements Runnable {
 		Socket listener;
 		public Listener(Socket someSocket){
 			this.listener = someSocket;
@@ -153,7 +160,7 @@ private static boolean stillRunning = true;
 
 	}
 
-	public class ProcessServer implements Runnable{
+	private static class ProcessServer implements Runnable{
 	    /**
 	     * Default port number of process server
 	     */
