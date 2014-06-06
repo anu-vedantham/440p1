@@ -10,7 +10,7 @@ public class TransactionalFileOutputStream extends OutputStream implements Seria
 	
 	private File outputFile;
 	private long index;
-	private RandomAccessFile writer;
+	private transient RandomAccessFile writer;
 	
 	public TransactionalFileOutputStream (File outputFile){
 		this.outputFile = outputFile;

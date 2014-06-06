@@ -10,7 +10,7 @@ public class TransactionalFileInputStream extends InputStream implements Seriali
 	
 	private File inputFile;
 	private long index;
-	private RandomAccessFile reader;
+	private transient RandomAccessFile reader;
 	
 	public TransactionalFileInputStream (File inputFile){
 		this.inputFile = inputFile;

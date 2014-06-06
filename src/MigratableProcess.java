@@ -17,7 +17,7 @@ public interface MigratableProcess extends Runnable, Serializable{
 		//this.suspending = false;
 	}*/
 	void run();
-
+	
 	public void suspend();
 		/*
 		suspending = true;

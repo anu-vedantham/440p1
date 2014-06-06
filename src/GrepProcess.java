@@ -16,6 +16,7 @@ public class GrepProcess implements MigratableProcess
 	private long id;
 
 	private volatile boolean suspending;
+	
 
 	public GrepProcess(String args[]) throws Exception
 	{
@@ -45,11 +46,11 @@ public class GrepProcess implements MigratableProcess
 				}
 				
 				// Make grep take longer so that we don't require extremely large files for interesting results
-				/*try {
-					Thread.sleep(100);
+				try {
+					Thread.sleep(500);
 				} catch (InterruptedException e) {
 					// ignore it
-				}*/
+				}
 			}
 		} catch (EOFException e) {
 			//End of File
@@ -64,7 +65,13 @@ public class GrepProcess implements MigratableProcess
 	public void suspend()
 	{
 		suspending = true;
-		while (suspending);
+		while (suspending){
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+			}
+		}
 	}
 
 	@Override

@@ -88,8 +88,8 @@ private static boolean stillRunning = true;
 							}
 							
 						}
-						String className = tokens[0];
-						if (tokens.length > 1){
+						else if (tokens.length > 1){
+							String className = tokens[0];
 								String[] argArray = Arrays.copyOfRange(tokens, 1, tokens.length);
 							try{
 								manager.addProcess(className, argArray);
@@ -170,7 +170,7 @@ private static boolean stillRunning = true;
 	    /**
 	     * Default port number of process server
 	     */
-	    public static final int PORT = 131;
+	    public static final int PORT = 136;
 
 	    /**
 	     * Server socket of process server

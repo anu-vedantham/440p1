@@ -37,14 +37,12 @@ public class CopyProcess implements MigratableProcess
 
 				if (line == null) break;
 			    out.println(line);
-				
 				// Make copy take longer so that we don't require extremely large files for interesting results
-				/*
 			    try {
-					Thread.sleep(100);
+					Thread.sleep(500);
 				} catch (InterruptedException e) {
 					// ignore it
-				}*/
+				}
 			}
 		} catch (EOFException e) {
 			//End of File
@@ -55,11 +53,18 @@ public class CopyProcess implements MigratableProcess
 
 		suspending = false;
 	}
-
+	
 	public void suspend()
 	{
 		suspending = true;
-		while (suspending);
+		while (suspending){
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
