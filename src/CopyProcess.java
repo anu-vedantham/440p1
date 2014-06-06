@@ -12,14 +12,13 @@ public class CopyProcess implements MigratableProcess
 {
 	private TransactionalFileInputStream  inFile;
 	private TransactionalFileOutputStream outFile;
-	private String query;
 	private long id;
 
 	private volatile boolean suspending;
 
 	public CopyProcess(String args[]) throws Exception
 	{
-		if (args.length != 3) {
+		if (args.length != 2) {
 			System.out.println("usage: CopyProcess <inputFile> <outputFile>");
 			throw new Exception("Invalid Arguments");
 		}
@@ -40,11 +39,12 @@ public class CopyProcess implements MigratableProcess
 			    out.println(line);
 				
 				// Make copy take longer so that we don't require extremely large files for interesting results
-				try {
+				/*
+			    try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					// ignore it
-				}
+				}*/
 			}
 		} catch (EOFException e) {
 			//End of File

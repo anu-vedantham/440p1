@@ -49,10 +49,8 @@ private static boolean stillRunning = true;
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					finally{
-						stillRunning = false;
-						System.out.println("exiting...");
-					}
+					server.stop();
+					
 					break;
 				case "ps" :
 					/**
@@ -86,19 +84,26 @@ private static boolean stillRunning = true;
 							try {
 								manager.migrateProcess(migrateArgs);
 							} catch (Exception e) {
-								System.out.println("Error: "+e);
+								System.out.println("Migrate error: "+e);
 							}
 							
 						}
 						String className = tokens[0];
-						String[] argArray = Arrays.copyOfRange(tokens, 1, tokens.length);
-						try{
-							manager.addProcess(className, argArray);
+						if (tokens.length > 1){
+								String[] argArray = Arrays.copyOfRange(tokens, 1, tokens.length);
+							try{
+								manager.addProcess(className, argArray);
+							}
+							catch(Exception e){
+								System.out.println("Process "+ className 
+										+ " not available with args given " + e);
+							}
 						}
-						catch(Exception e){
-							System.out.println("Process "+ className 
-									+ " not available with args given");	
+						else{
+							System.out.println("not valid input. Try again");
 						}
+						
+							
 							
 					}
 					
@@ -165,12 +170,12 @@ private static boolean stillRunning = true;
 	    /**
 	     * Default port number of process server
 	     */
-	    public static final int PORT = 15440;
+	    public static final int PORT = 131;
 
 	    /**
 	     * Server socket of process server
 	     */
-	    private ServerSocket serverSocket;
+	    private static ServerSocket serverSocket;
 
 	    /**
 	     * Running flag
@@ -182,7 +187,7 @@ private static boolean stillRunning = true;
 	     * accept() migration request.
 	     */
 	    
-	    public void run() {
+	    public void run(){
 	        // = true;
 	        bind();
 	        while(stillRunning){
@@ -193,11 +198,14 @@ private static boolean stillRunning = true;
 	    /**
 	     * Stop the process server.
 	     */
-	    public void stop(){
+	    public static void stop(){
 	        if(stillRunning){
 	            //stillRunning = false;
 	            try {
-	                serverSocket.close();
+	            	stillRunning = false;
+	            	serverSocket.close();
+					System.out.println("exiting...");
+	            	System.exit(0);
 	            } catch (Exception e) {
 	                System.out.println("Error"+ e);
 	                System.exit(-1);
@@ -215,20 +223,24 @@ private static boolean stillRunning = true;
 	        } catch (Exception e) {
 	            System.out.println
 	            	("ServerSocket failed to bind. Restart program and try again");
+	            System.out.println(e);
 	            System.exit(-1);
 	        }
 	    }
 	    
-	    private void accept(){
+	    private void accept() {
 	        Socket clientSocket = null;
+	        if(stillRunning){
 	        try {
 	            clientSocket = serverSocket.accept();
 	        }
 	        catch (Exception e) {
-	        	System.out.println("Error: "+ e);
+	        	System.out.println("Accept error: "+ e);
+	        	server.stop();
 	            System.exit(-1);
 	        }
 	        new Thread(new Listener(clientSocket)).start();
+	        }
 	    }
 	}
 }

@@ -1,6 +1,7 @@
 
 //import java.util.*;
 //import java.io.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -14,7 +15,7 @@ import java.net.Socket;
 public class ProcessManager {
 	
 	private AtomicLong currentpid;
-	private LinkedBlockingQueue<MigratableProcess> processes;
+	private ConcurrentLinkedQueue<MigratableProcess> processes = new ConcurrentLinkedQueue<MigratableProcess>();
 	
 	protected ProcessManager(){
 		currentpid = new AtomicLong(0);
@@ -36,8 +37,8 @@ public class ProcessManager {
 	
 	public void addProcess(String className, String[] args) throws Exception {
 		Class<?> obj = Class.forName(className);
-		Constructor contr = obj.getConstructor(Arrays.class);
-		MigratableProcess newProcess = (MigratableProcess) contr.newInstance(args);
+		Constructor contr = obj.getConstructor(String[].class);
+		MigratableProcess newProcess = (MigratableProcess) contr.newInstance((Object)args);
 		newProcess.setID(currentpid.get());
 		nextPid();
 		startProcess(newProcess);
