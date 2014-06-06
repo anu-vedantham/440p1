@@ -65,9 +65,12 @@ public class ProcessManager {
 			return "No Processes currently running\n";
 		String returnedString = "";
 		for(MigratableProcess process: processes){
-			returnedString+= process.getID()+": "+process.toString()+"\n";
+			if (!process.isProcessDone())
+				returnedString+= process.getID()+": "+process.toString()+"\n";
 		}
-		return returnedString;
+		if(returnedString.length() >0)
+			return returnedString;
+		else return "No Processes currently running\n";
 					
 	}
 	
@@ -80,6 +83,10 @@ public class ProcessManager {
 		 */
 		int port = Integer.parseInt(args[2]);
 		MigratableProcess process = processByPid(pid);
+		if (process.isProcessDone()){
+			processes.remove(process);
+			System.out.println("process is complete so it cannot be migrated");
+		}
 		
 		Socket socket = null;
 		socket = new Socket(host, port);

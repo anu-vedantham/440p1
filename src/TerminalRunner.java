@@ -75,7 +75,7 @@ private static boolean stillRunning = true;
 						System.out.println("not a valid argument");
 					else{
 						String[] tokens = input.split(" ");
-						if (tokens[0].equalsIgnoreCase("migrate")  && isInteger(tokens[1])){
+						if (tokens.length >1 && tokens[0].equalsIgnoreCase("migrate")  && isInteger(tokens[1])){
 							String[] migrateArgs = new String[3];
 							migrateArgs[0] = tokens[1];
 							migrateArgs[1] = "localhost"; //@TODO eeeh might wanna change it
@@ -170,7 +170,7 @@ private static boolean stillRunning = true;
 	    /**
 	     * Default port number of process server
 	     */
-	    public static final int PORT = 136;
+	    public static final int PORT = 137;
 
 	    /**
 	     * Server socket of process server
@@ -200,7 +200,6 @@ private static boolean stillRunning = true;
 	     */
 	    public static void stop(){
 	        if(stillRunning){
-	            //stillRunning = false;
 	            try {
 	            	stillRunning = false;
 	            	serverSocket.close();
@@ -231,15 +230,15 @@ private static boolean stillRunning = true;
 	    private void accept() {
 	        Socket clientSocket = null;
 	        if(stillRunning){
-	        try {
-	            clientSocket = serverSocket.accept();
-	        }
-	        catch (Exception e) {
-	        	System.out.println("Accept error: "+ e);
-	        	server.stop();
-	            System.exit(-1);
-	        }
-	        new Thread(new Listener(clientSocket)).start();
+		        try {
+		            clientSocket = serverSocket.accept();
+		        }
+		        catch (Exception e) {
+		        	System.out.println("Accept error: "+ e);
+		        	server.stop();
+		            System.exit(-1);
+		        }
+		        new Thread(new Listener(clientSocket)).start();
 	        }
 	    }
 	}

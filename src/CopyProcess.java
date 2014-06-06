@@ -13,6 +13,7 @@ public class CopyProcess implements MigratableProcess
 	private TransactionalFileInputStream  inFile;
 	private TransactionalFileOutputStream outFile;
 	private long id;
+	private boolean isItDone = false;
 
 	private volatile boolean suspending;
 
@@ -35,8 +36,11 @@ public class CopyProcess implements MigratableProcess
 			while (!suspending) {
 				String line = in.readLine();
 
-				if (line == null) break;
+				if (line == null){ 
+					break;
+				}
 			    out.println(line);
+			    //System.out.println(line);
 				// Make copy take longer so that we don't require extremely large files for interesting results
 			    try {
 					Thread.sleep(500);
@@ -45,26 +49,23 @@ public class CopyProcess implements MigratableProcess
 				}
 			}
 		} catch (EOFException e) {
-			//End of File
+			
 		} catch (IOException e) {
 			System.out.println ("CopyProcess: Error: " + e);
 		}
 
-
+		isItDone = true;
 		suspending = false;
+	}
+	
+	public boolean isProcessDone(){
+		return isItDone;
 	}
 	
 	public void suspend()
 	{
 		suspending = true;
-		while (suspending){
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		while (suspending);
 	}
 
 	@Override

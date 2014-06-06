@@ -37,7 +37,8 @@ public interface MigratableProcess extends Runnable, Serializable{
 			this.outFile.afterMigrating();
 		this.run();
 	*/
-
+	
+	public boolean isProcessDone();
 
 	public void setID(long newID);
 

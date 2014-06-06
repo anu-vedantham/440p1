@@ -14,8 +14,10 @@ public class GrepProcess implements MigratableProcess
 	private TransactionalFileOutputStream outFile;
 	private String query;
 	private long id;
-
+	private boolean isItDone = false;
+	
 	private volatile boolean suspending;
+	
 	
 
 	public GrepProcess(String args[]) throws Exception
@@ -53,7 +55,7 @@ public class GrepProcess implements MigratableProcess
 				}
 			}
 		} catch (EOFException e) {
-			//End of File
+			isItDone = true;
 		} catch (IOException e) {
 			System.out.println ("GrepProcess: Error: " + e);
 		}
@@ -62,16 +64,14 @@ public class GrepProcess implements MigratableProcess
 		suspending = false;
 	}
 
+	public boolean isProcessDone(){
+		return isItDone;
+	}
+	
 	public void suspend()
 	{
 		suspending = true;
-		while (suspending){
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-			}
-		}
+		while (suspending);
 	}
 
 	@Override
